@@ -1,5 +1,6 @@
 <script>
   import Peer from "peerjs";
+  import { onMount } from "svelte";
 
   export let id;
   const oppId = id === 1 ? 2 : 1;
@@ -8,6 +9,9 @@
   let oppConn = null;
   let initiator = false;
   let message = "";
+  let selfStream = new MediaStream();
+  let remoteStream = null;
+  let selfVideo;
 
   peer.on("open", () => {
     console.info("Peer opened");
@@ -28,6 +32,8 @@
     });
   });
 
+  $: console.log(selfVideo);
+
   function call() {
     console.log("calling");
     let conn = peer.connect("arnu515s-godly-minecraft-com-" + oppId.toString());
@@ -45,6 +51,15 @@
 
     oppConn.send(message.trim());
   }
+
+  onMount(async () => {
+    const stream = await navigator.mediaDevices.getUserMedia({
+      video: true,
+      audio: true
+    });
+
+    stream.getTracks().forEach(track => selfStream.addTrack);
+  });
 </script>
 
 <div class="w3-container">
@@ -55,5 +70,11 @@
     <input type="text" class="w3-input w3-border" bind:value={message}>
     <p>
     <button class="w3-button w3-blue" on:click={send}>Send</button></p>
+
+    <div class="w3-margin w3-padding">
+      <div style="width: 50%">
+        <video bind:this={selfVideo}></video>
+      </div>
+    </div>
   {/if}
 </div>
