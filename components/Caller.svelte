@@ -1,6 +1,7 @@
 <script>
   import Peer from "peerjs";
   import { onMount } from "svelte";
+  console.log("loaded");
 
   export let id;
   const oppId = id === 1 ? 2 : 1;
